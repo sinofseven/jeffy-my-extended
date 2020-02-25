@@ -2,6 +2,7 @@ import logging
 import os
 import traceback
 from typing import Dict, Any
+from .json_log_formatter import JsonLogFormatter
 
 
 class Logger(object):
@@ -9,9 +10,10 @@ class Logger(object):
     Jeffy logger class.
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(os.getenv('JEFFY_LOG_LEVEL', 'INFO'))
+
         self.log_context = {
             'aws_region': os.environ.get('AWS_REGION') or os.environ.get('AWS_DEFAULT_REGION'),
             'function_name': os.environ.get('AWS_LAMBDA_FUNCTION_NAME'),
@@ -20,6 +22,11 @@ class Logger(object):
             'log_group_name': os.environ.get('AWS_LAMBDA_LOG_GROUP_NAME'),
             'log_stream_name': os.environ.get('AWS_LAMBDA_LOG_STREAM_NAME')
         }
+
+        if kwargs.get('is_json', False):
+            handler = logging.StreamHandler()
+            handler.setFormatter(JsonLogFormatter)
+            self.logger.addHandler(handler)
 
     def setup(self, attributes: Dict) -> None:
         """

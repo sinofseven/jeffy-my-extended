@@ -9,8 +9,8 @@ class Jeffy(object):
     Jeffy framework main class.
     """
 
-    def __init__(self):
-        self.logger = Logger()
+    def __init__(self, **kwargs):
+        self.logger = Logger(**kwargs)
         self.decorator = Decorators(logger=self.logger)
 
 

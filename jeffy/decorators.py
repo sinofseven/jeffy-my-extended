@@ -3,6 +3,7 @@ import json
 import base64
 import functools
 import uuid
+import os
 import jsonschema
 from typing import Dict, Callable
 from jeffy.sdk.s3 import S3
@@ -32,6 +33,10 @@ class Decorators(object):
         @functools.wraps(func)
         def wrapper(event, context):
             self.logger.info(event)
+            try:
+                os.environ['JEFFY_LAMBDA_REQUEST_ID'] = context.aws_request_id
+            except Exception as e:
+                self.logger.error(e)
             try:
                 result = func(event, context)
                 self.logger.info(result)
